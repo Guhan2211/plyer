@@ -9,7 +9,9 @@ Intent = autoclass('android.content.Intent')
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 MediaStore = autoclass('android.provider.MediaStore')
 Uri = autoclass('android.net.Uri')
+StrictMode = autoclass('android.os.StrictMode')
 
+StrictMode.disableDeathOnUriFileExposure()
 
 class AndroidCamera(Camera):
 
