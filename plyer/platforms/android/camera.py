@@ -9,41 +9,19 @@ Intent = autoclass('android.content.Intent')
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 MediaStore = autoclass('android.provider.MediaStore')
 Uri = autoclass('android.net.Uri')
-Fp = autoclass('android.support.v4.content')
-Context = autoclass("android.content.Context")
-Environment = autoclass("android.os.Environment")
+
 
 class AndroidCamera(Camera):
+
     def _take_picture(self, on_complete, filename=None):
-
-        def create_img_file():
-            File = autoclass('java.io.File')
-            storageDir = Context.getExternalFilesDir(null)
-            print(str(storageDir),"Inside Camera py")
-            imageFile = File(
-                storageDir,
-                "gmv.jpg"
-            )
-            imageFile.createNewFile()
-
-            return imageFile
-
         assert(on_complete is not None)
         self.on_complete = on_complete
         self.filename = filename
         android.activity.unbind(on_activity_result=self._on_activity_result)
         android.activity.bind(on_activity_result=self._on_activity_result)
         intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-        photoFile = create_img_file()
-        photoUri = Fp.FileProvider.getUriForFile(
-            Context.getApplicationContext(),
-            "org.test.myapp.fileprovider",
-            photoFile
-        )
-
-        parcelable = cast('android.os.Parcelable', photoUri)
-
+        uri = Uri.parse('file://' + filename)
+        parcelable = cast('android.os.Parcelable', uri)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, parcelable)
         activity.startActivityForResult(intent, 0x123)
 
