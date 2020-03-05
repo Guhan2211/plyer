@@ -9,7 +9,7 @@ Intent = autoclass('android.content.Intent')
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 MediaStore = autoclass('android.provider.MediaStore')
 Uri = autoclass('android.net.Uri')
-FileProvider = autoclass('android.support.v4.content.FileProvider')
+Fp = autoclass('android.support.v4.content')
 Context = autoclass("android.content.Context")
 Environment = autoclass("android.os.Environment")
 
@@ -36,7 +36,7 @@ class AndroidCamera(Camera):
         intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
         photoFile = create_img_file()
-        photoUri = FileProvider.getUriForFile(
+        photoUri = Fp.FileProvider.getUriForFile(
             Context.getApplicationContext(),
             "org.test.myapp.fileprovider",
             photoFile
