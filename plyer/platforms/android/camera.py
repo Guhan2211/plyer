@@ -18,11 +18,11 @@ class AndroidCamera(Camera):
 
         def create_img_file():
             File = autoclass('java.io.File')
-            storageDir = Context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            storageDir = Context.getExternalFilesDir(null)
 
             imageFile = File(
                 storageDir,
-                "temp.jpg"
+                "gmv.jpg"
             )
             imageFile.createNewFile()
 
