@@ -9,11 +9,28 @@ Intent = autoclass('android.content.Intent')
 PythonActivity = autoclass('org.renpy.android.PythonActivity')
 MediaStore = autoclass('android.provider.MediaStore')
 Uri = autoclass('android.net.Uri')
+        
+FileProvider = autoclass('android.support.v4.content.FileProvider')
+Context = autoclass("android.content.Context")
+Environment = autoclass("android.os.Environment")
+
 
 
 class AndroidCamera(Camera):
-
     def _take_picture(self, on_complete, filename=None):
+
+        def create_img_file():
+            File = autoclass('java.io.File')
+            storageDir = Context.getExternalFilesDir(null)
+            print(str(storageDir),"Inside Camera py")
+            imageFile = File(
+                storageDir,
+                "gmv.jpg"
+            )
+            imageFile.createNewFile()
+
+
+            return imageFile
         assert(on_complete is not None)
         self.on_complete = on_complete
         self.filename = filename
