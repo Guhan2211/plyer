@@ -14,7 +14,7 @@ Context = autoclass("android.content.Context")
 Environment = autoclass("android.os.Environment")
 
 class AndroidCamera(Camera):
-def _take_picture(self, on_complete, filename=None):
+    def _take_picture(self, on_complete, filename=None):
 
         def create_img_file():
             File = autoclass('java.io.File')
