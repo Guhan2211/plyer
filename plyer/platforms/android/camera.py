@@ -42,7 +42,8 @@ class AndroidCamera(Camera):
             "org.test.myapp.fileprovider",
             photoFile
         )
-
+        print(photoUri)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri); 
         parcelable = cast('android.os.Parcelable', photoUri)
 
         intent.putExtra(MediaStore.EXTRA_OUTPUT, parcelable)
