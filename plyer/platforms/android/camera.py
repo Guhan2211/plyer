@@ -51,9 +51,9 @@ class CameraAndroid:
             self.on_complete(file_path=self.image_path)
 
     def _create_image_file(self):
-        timestamp = time.strftime("%Y%m%d_%H%M%S", time.gmtime())
-        image_file_name = "JPEG_" + timestamp + "_"
-        storage_dir = Context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        
+        image_file_name = "gmv"
+        storage_dir = Context.getExternalFilesDir(null)
         image = File.createTempFile(
             image_file_name,
             ".jpg",
