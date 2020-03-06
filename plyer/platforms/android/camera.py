@@ -23,7 +23,7 @@ class AndroidCamera(Camera):
 
             imageFile = File(
                 storageDir,
-                "gmv.jpg"
+                "temp.jpg"
             )
             imageFile.createNewFile()
 
