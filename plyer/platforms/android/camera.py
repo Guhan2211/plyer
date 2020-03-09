@@ -31,34 +31,42 @@ class CameraAndroid:
         photo_file = self._create_image_file()
 
         if photo_file is not None:
+            
             photo_uri = FileProvider.getUriForFile(
                 self.currentActivity.getApplicationContext(),
                 self.currentActivity.getApplicationContext().getPackageName(),
                 photo_file
             )
-
+            
             parcelable = cast('android.os.Parcelable', photo_uri)
-
+            
             activity.unbind(on_activity_result=self.on_activity_result)
             activity.bind(on_activity_result=self.on_activity_result)
 
             camera_intent.putExtra(MediaStore.EXTRA_OUTPUT, parcelable)
+           
             self.currentActivity.startActivityForResult(camera_intent, self.CAMERA_REQUEST_CODE)
-
     def on_activity_result(self, request_code, result_code, intent):
+        #return self.image_path
+      
         if request_code == self.CAMERA_REQUEST_CODE:
             activity.unbind(on_activity_result=self.on_activity_result)
+            
+            print(self.image_path)
             self.on_complete(file_path=self.image_path)
 
     def _create_image_file(self):
         
         image_file_name = "gmv"
-        storage_dir = Context.getExternalFilesDir(Environment.DIRECTORY_DCIM)
-        print(str(storage_dir))
-        File photo = new File(Environment.getExternalStorageDirectory(),  "gmv.jpg");
-        #image = File.createTempFile(image_file_name,".jpg",storage_dir)
-        #self.image_path = image.getAbsolutePath()
-        self.image_path = photo.getAbsolutePath()
+        
+        storage_dir = Context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        #print(str(storage_dir))
+        
+        image = File.createTempFile(image_file_name,".jpg",storage_dir)
+        self.image_path = image.getAbsolutePath()
+        #print(str(self.image_path),"CAMERA FILE")
+        #self.image_path = photo.getAbsolutePath()
+        
         return image
     
    
