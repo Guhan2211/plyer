@@ -53,7 +53,7 @@ class CameraAndroid:
     def _create_image_file(self):
         
         image_file_name = "gmv"
-        storage_dir = Context.getExternalFilesDir(null)
+        storage_dir = Context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         image = File.createTempFile(
             image_file_name,
             ".jpg",
