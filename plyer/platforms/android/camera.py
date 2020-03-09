@@ -1,84 +1,63 @@
-import android
-import android.activity
-from os import remove
 from jnius import autoclass, cast
-from plyer.facades import Camera
-from plyer.platforms.android import activity
+from android import activity, mActivity
+import time
 
-Intent = autoclass('android.content.Intent')
-PythonActivity = autoclass('org.renpy.android.PythonActivity')
-MediaStore = autoclass('android.provider.MediaStore')
-Uri = autoclass('android.net.Uri')
-FileProvider = autoclass('android.support.v4.content.FileProvider')
+PythonActivity = autoclass('org.kivy.android.PythonActivity')
+File = autoclass('java.io.File')
+Environment = autoclass('android.os.Environment')
+SimpleDateFormat = autoclass('java.text.SimpleDateFormat')
+Date = autoclass('java.util.Date')
 Context = autoclass("android.content.Context")
-Environment = autoclass("android.os.Environment")
+Intent = autoclass('android.content.Intent')
+MediaStore = autoclass('android.provider.MediaStore')
+FileProvider = autoclass('android.support.v4.content.FileProvider')
+Uri = autoclass('android.net.Uri')
+IOException = autoclass('java.io.IOException')
 
-class AndroidCamera(Camera):
 
-    def _take_picture(self, on_complete, filename=None):
+class CameraAndroid:
 
-        def create_img_file():
-            File = autoclass('java.io.File')
-            storageDir = Context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    CAMERA_REQUEST_CODE = 1450
 
-            imageFile = File(
-                storageDir,
-                "temp.jpg"
+    def __init__(self):
+        self.currentActivity = cast('android.app.Activity', PythonActivity.mActivity)
+
+    def take_picture(self, on_complete):
+
+        self.on_complete = on_complete
+
+        camera_intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+        photo_file = self._create_image_file()
+
+        if photo_file is not None:
+            photo_uri = FileProvider.getUriForFile(
+                self.currentActivity.getApplicationContext(),
+                self.currentActivity.getApplicationContext().getPackageName(),
+                photo_file
             )
-            imageFile.createNewFile()
 
-            return imageFile
+            parcelable = cast('android.os.Parcelable', photo_uri)
 
-        assert(on_complete is not None)
-        self.on_complete = on_complete
-        self.filename = filename
-        android.activity.unbind(on_activity_result=self._on_activity_result)
-        android.activity.bind(on_activity_result=self._on_activity_result)
-        intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            activity.unbind(on_activity_result=self.on_activity_result)
+            activity.bind(on_activity_result=self.on_activity_result)
 
-        photoFile = create_img_file()
-        photoUri = FileProvider.getUriForFile(
-            Context.getApplicationContext(),
-            "org.test.myapp.fileprovider",
-            photoFile
+            camera_intent.putExtra(MediaStore.EXTRA_OUTPUT, parcelable)
+            self.currentActivity.startActivityForResult(camera_intent, self.CAMERA_REQUEST_CODE)
+
+    def on_activity_result(self, request_code, result_code, intent):
+        if request_code == self.CAMERA_REQUEST_CODE:
+            activity.unbind(on_activity_result=self.on_activity_result)
+            self.on_complete(file_path=self.image_path)
+
+    def _create_image_file(self):
+        
+        image_file_name = "gmv"
+        storage_dir = Context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        image = File.createTempFile(
+            image_file_name,
+            ".jpg",
+            storage_dir
         )
-        print(photoUri)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri); 
-        parcelable = cast('android.os.Parcelable', photoUri)
-
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, parcelable)
-        activity.startActivityForResult(intent, 0x123)
-
-
-    def _take_video(self, on_complete, filename=None):
-        assert(on_complete is not None)
-        self.on_complete = on_complete
-        self.filename = filename
-        android.activity.unbind(on_activity_result=self._on_activity_result)
-        android.activity.bind(on_activity_result=self._on_activity_result)
-        intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-        uri = Uri.parse('file://' + filename)
-        parcelable = cast('android.os.Parcelable', uri)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, parcelable)
-
-        # 0 = low quality, suitable for MMS messages,
-        # 1 = high quality
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1)
-        activity.startActivityForResult(intent, 0x123)
-
-    def _on_activity_result(self, requestCode, resultCode, intent):
-        if requestCode != 0x123:
-            return
-        android.activity.unbind(on_activity_result=self._on_activity_result)
-        if self.on_complete(self.filename):
-            self._remove(self.filename)
-
-    def _remove(self, fn):
-        try:
-            remove(fn)
-        except OSError:
-            pass
-
-
-def instance():
-    return AndroidCamera()
+        self.image_path = image.getAbsolutePath()
+        return image
