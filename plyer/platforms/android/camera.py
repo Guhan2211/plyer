@@ -61,3 +61,7 @@ class CameraAndroid:
         )
         self.image_path = image.getAbsolutePath()
         return image
+    
+   
+def instance():
+    return CameraAndroid()
