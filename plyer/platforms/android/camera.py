@@ -53,14 +53,12 @@ class CameraAndroid:
     def _create_image_file(self):
         
         image_file_name = "gmv"
-        storage_dir = Context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        storage_dir = Context.getExternalFilesDir(Environment.DIRECTORY_DCIM)
         print(str(storage_dir))
-        image = File.createTempFile(
-            image_file_name,
-            ".jpg",
-            storage_dir
-        )
-        self.image_path = image.getAbsolutePath()
+        File photo = new File(Environment.getExternalStorageDirectory(),  "gmv.jpg");
+        #image = File.createTempFile(image_file_name,".jpg",storage_dir)
+        #self.image_path = image.getAbsolutePath()
+        self.image_path = photo.getAbsolutePath()
         return image
     
    
